@@ -5,6 +5,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {DecentralizedStableCoin} from "./DecentralizedStableCoin.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import {console} from "forge-std/console.sol";
 
 /// @title DSCEngine
 /// @author Chinedu Jeremiah
@@ -84,12 +85,15 @@ contract DSCEngine is ReentrancyGuard {
     ////////////////////////
     // External Functions//
     ///////////////////////
-    function depositCollateralAndMintDSC() external {}
+    function depositCollateralAndMintDSC(address tokenCollateralAddress, uint256 amountCollateral, uint256 amountDscToMint) external {
+        depositCollateral(tokenCollateralAddress, amountCollateral);
+        mintDsc(amountDscToMint);
+    }
 
     /// @param tokenCollateralAddress The address of the token to deposit as collateral
     /// @param amountCollateral The amount of collateral to deposit
     function depositCollateral(address tokenCollateralAddress, uint256 amountCollateral)
-        external
+        public
         moreThanZero(amountCollateral)
         isAllowedToken(tokenCollateralAddress)
         nonReentrant
@@ -113,7 +117,7 @@ contract DSCEngine is ReentrancyGuard {
     /// @notice This function allows users to mint dsc tokens based on the amount of collateral deposited
     /// @dev Users must have more collateral value than the minimum threshold
     /// @param amountDscToMint The amount of decentralized stable coin to mint
-    function mintDsc(uint256 amountDscToMint) external moreThanZero(amountDscToMint) nonReentrant {
+    function mintDsc(uint256 amountDscToMint) public moreThanZero(amountDscToMint) nonReentrant {
         s_dscMinted[msg.sender] += amountDscToMint;
         _revertIfHealthFactorIsBroken(msg.sender);
         bool minted = i_dsc.mint(msg.sender, amountDscToMint);

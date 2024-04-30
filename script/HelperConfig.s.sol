@@ -32,8 +32,8 @@ contract HelperConfig is Script {
 
     function getSepoliaEthConfig() public view returns (NetworkConfig memory) {
         return NetworkConfig({
-            wethUsd: 0x694AA1769357215DE4FAC081bf1f309aDC325306,
-            wbtcUsd: 0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43,
+            wethUsdPriceFeed: 0x694AA1769357215DE4FAC081bf1f309aDC325306,
+            wbtcUsdPriceFeed: 0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43,
             weth: 0xdd13E55209Fd76AfE204dBda4007C227904f0a81,
             wbtc: 0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063,
             deployerKey: vm.envUint("PRIVATE_KEY")
@@ -46,16 +46,16 @@ contract HelperConfig is Script {
         }
         vm.startBroadcast();
         MockV3Aggregator wethUsdPriceFeed = new MockV3Aggregator(DECIMALS, ETH_USD_PRICE);
-        ERC20Mock wethMock = new ERC20Mock("WETH", "WETH");
+        ERC20Mock wethMock = new ERC20Mock();
 
         MockV3Aggregator wbtcUsdPriceFeed = new MockV3Aggregator(DECIMALS, BTC_USD_PRICE);
-        ERC20Mock wbtcMock = new ERC20Mock("WBTC", "WBTC");
+        ERC20Mock wbtcMock = new ERC20Mock();
 
         vm.stopBroadcast();
 
         return NetworkConfig({
-            wethUsd: address(wethUsdPriceFeed),
-            wbtcUsd: address(wbtcUsdPriceFeed),
+            wethUsdPriceFeed: address(wethUsdPriceFeed),
+            wbtcUsdPriceFeed: address(wbtcUsdPriceFeed),
             weth: address(wethMock),
             wbtc: address(wbtcMock),
             deployerKey: DEFAULT_ANVIL_PRIVATE_KEY
