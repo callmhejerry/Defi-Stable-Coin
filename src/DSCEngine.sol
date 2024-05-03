@@ -191,7 +191,7 @@ contract DSCEngine is ReentrancyGuard {
 
         uint256 endingUserHealthFactor = _healthFactor(user);
 
-        if(endingUserHealthFactor <= startingUserHealthFactor){
+        if (endingUserHealthFactor <= startingUserHealthFactor) {
             revert DSCEngine__HealthFactorNotImproved();
         }
         _revertIfHealthFactorIsBroken(msg.sender);
@@ -203,11 +203,10 @@ contract DSCEngine is ReentrancyGuard {
     // Private & Internal view Functions /
     //////////////////////////////////////
 
-
     /// @dev low-level internal function, do not call unless the function calling it is checking for health factor being broken
     function _burnDsc(uint256 amountDscToBurn, address onBehalfOf, address dscFrom) private {
         s_dscMinted[onBehalfOf] -= amountDscToBurn;
-        bool success = i_dsc.transferFrom(dscFrom,address(this) , amountDscToBurn);
+        bool success = i_dsc.transferFrom(dscFrom, address(this), amountDscToBurn);
 
         if (!success) {
             revert DSCEngine__TransferFailed();
@@ -280,5 +279,13 @@ contract DSCEngine is ReentrancyGuard {
         (, int256 price,,,) = priceFeed.latestRoundData();
 
         return ((uint256(price) * ADDITIONAL_FEED_PRECISION) * amount) / PRECISION;
+    }
+
+    function getAccountInformation(address user)
+        external
+        view
+        returns (uint256 totalDscMinted, uint256 collateralValueInUsd)
+    {
+        (totalDscMinted, collateralValueInUsd) = _getAccountInformation(user);
     }
 }
